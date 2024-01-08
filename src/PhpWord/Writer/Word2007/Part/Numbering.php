@@ -170,6 +170,7 @@ class Numbering extends AbstractPart
     {
         $font = $level->getFont();
         $hint = $level->getHint();
+        $color = $level->getColor();
 
         $xmlWriter->startElement('w:rPr');
         $xmlWriter->startElement('w:rFonts');
@@ -178,6 +179,9 @@ class Numbering extends AbstractPart
         $xmlWriter->writeAttributeIf($font !== null, 'w:cs', $font);
         $xmlWriter->writeAttributeIf($hint !== null, 'w:hint', $hint);
         $xmlWriter->endElement(); // w:rFonts
+        $xmlWriter->startElement('w:color');
+        $xmlWriter->writeAttribute('w:val', $color);
+        $xmlWriter->endElement(); // w:color
         $xmlWriter->endElement(); // w:rPr
     }
 

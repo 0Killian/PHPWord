@@ -134,6 +134,37 @@ class NumberingLevel extends AbstractStyle
     private $hint;
 
     /**
+     * Font color.
+     *
+     * @var string
+     */
+    private $color;
+
+    /**
+     * Get font color.
+     *
+     * @return string
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * Set font color.
+     *
+     * @param string $value
+     *
+     * @return self
+     */
+    public function setColor($value = null)
+    {
+        $this->color = $value;
+
+        return $this;
+    }
+
+    /**
      * Get level.
      *
      * @return int

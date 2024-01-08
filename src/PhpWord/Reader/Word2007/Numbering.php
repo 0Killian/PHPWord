@@ -110,6 +110,7 @@ class Numbering extends AbstractPart
         $level['hanging'] = $xmlReader->getAttribute('w:hanging', $subnode, 'w:pPr/w:ind');
         $level['font'] = $xmlReader->getAttribute('w:ascii', $subnode, 'w:rPr/w:rFonts');
         $level['hint'] = $xmlReader->getAttribute('w:hint', $subnode, 'w:rPr/w:rFonts');
+        $level['color'] = $xmlReader->getAttribute('w:val', $subnode, 'w:rPr/w:color');
 
         foreach ($level as $key => $value) {
             if (null === $value) {
