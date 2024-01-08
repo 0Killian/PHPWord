@@ -177,11 +177,12 @@ class Styles extends AbstractPart
 
         // Heading style
         if ($styleType == 'title') {
-            $arrStyle = explode('_', $styleName);
-            if (count($arrStyle) > 1) {
-                $styleId = 'Heading' . $arrStyle[1];
-                $styleName = 'heading ' . $arrStyle[1];
-                $styleLink = 'Heading' . $arrStyle[1] . 'Char';
+            $prefix = Style::getHeadingStyleNamePrefix();
+
+            if(str_starts_with($styleName, $prefix)) {
+                $styleId = $styleName;
+                $styleName = 'heading ' . substr($styleName, strlen($prefix));
+                $styleLink = $styleName . 'Char';
             } else {
                 $styleId = $styleName;
                 $styleName = strtolower($styleName);
