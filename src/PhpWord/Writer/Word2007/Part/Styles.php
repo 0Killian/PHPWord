@@ -181,12 +181,12 @@ class Styles extends AbstractPart
 
             if(str_starts_with($styleName, $prefix)) {
                 $styleId = $styleName;
-                $styleName = 'heading ' . substr($styleName, strlen($prefix));
                 $styleLink = $styleName . 'Char';
+                $styleName = 'heading ' . substr($styleName, strlen($prefix));
             } else {
                 $styleId = $styleName;
-                $styleName = strtolower($styleName);
                 $styleLink = $styleName . 'Char';
+                $styleName = strtolower($styleName);
             }
             $xmlWriter->writeAttribute('w:styleId', $styleId);
 
