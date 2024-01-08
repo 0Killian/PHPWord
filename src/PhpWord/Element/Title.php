@@ -78,7 +78,7 @@ class Title extends AbstractElement
         }
 
         $this->depth = $depth;
-        $styleName = $depth === 0 ? 'Title' : "Heading_{$this->depth}";
+        $styleName = $depth === 0 ? 'Title' : Style::getHeadingStyleNamePrefix() . $this->depth;
         if (array_key_exists($styleName, Style::getStyles())) {
             $this->style = str_replace('_', '', $styleName);
         }

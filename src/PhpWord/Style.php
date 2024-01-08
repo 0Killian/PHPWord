@@ -36,6 +36,33 @@ class Style
     private static $styles = [];
 
     /**
+     * Heading style name prefix.
+     *
+     * @var string
+     */
+    private static $headingStyleNamePrefix = 'Heading_';
+
+    /**
+     * Set heading style name prefix.
+     *
+     * @param string $prefix
+     */
+    public static function setHeadingStyleNamePrefix($prefix)
+    {
+        self::$headingStyleNamePrefix = $prefix;
+    }
+
+    /**
+     * Get heading style name prefix.
+     *
+     * @return string
+     */
+    public static function getHeadingStyleNamePrefix()
+    {
+        return self::$headingStyleNamePrefix;
+    }
+
+    /**
      * Add paragraph style.
      *
      * @param string $styleName
@@ -100,14 +127,12 @@ class Style
      *
      * @return \PhpOffice\PhpWord\Style\Font
      */
-    public static function addTitleStyle($styleName, $depth, $fontStyle, $paragraphStyle = null)
+    public static function addTitleStyle($depth, $fontStyle, $paragraphStyle = null)
     {
-        if (strlen($styleName) == 0) {
-            if (empty($depth)) {
-                $styleName = 'Title';
-            } else {
-                $styleName = "Heading_{$depth}";
-            }
+        if (empty($depth)) {
+            $styleName = 'Title';
+        } else {
+            $styleName = self::$headingStyleNamePrefix . $depth;
         }
 
         return self::setStyleValues($styleName, new Font('title', $paragraphStyle), $fontStyle);
