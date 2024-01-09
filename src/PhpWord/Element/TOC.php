@@ -55,14 +55,22 @@ class TOC extends AbstractElement
     private $maxDepth = 9;
 
     /**
+     * Set of styles corresponding to each depth level.
+     *
+     * @var array
+     */
+    private $styles = [];
+
+    /**
      * Create a new Table-of-Contents Element.
      *
+     * @param mixed $styles
      * @param mixed $fontStyle
      * @param array $tocStyle
      * @param int $minDepth
      * @param int $maxDepth
      */
-    public function __construct($fontStyle = null, $tocStyle = null, $minDepth = 1, $maxDepth = 9)
+    public function __construct($styles = null, $fontStyle = null, $tocStyle = null, $minDepth = 1, $maxDepth = 9)
     {
         $this->tocStyle = new TOCStyle();
 
@@ -79,6 +87,8 @@ class TOC extends AbstractElement
 
         $this->minDepth = $minDepth;
         $this->maxDepth = $maxDepth;
+
+        $this->styles = $styles;
     }
 
     /**
@@ -105,6 +115,16 @@ class TOC extends AbstractElement
         }
 
         return $titles;
+    }
+
+    /**
+     * Get title styles
+     *
+     * @return ?array
+     */
+    public function getTitleStyles()
+    {
+        return $this->styles;
     }
 
     /**
