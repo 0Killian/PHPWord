@@ -119,7 +119,7 @@ class TextBreak extends AbstractElement
             return $this->paragraphStyle;
         }
 
-        if (null !== $this->fontStyle) {
+        if (null !== $this->fontStyle && !is_string($this->fontStyle)) {
             return $this->fontStyle->getParagraph();
         }
 
