@@ -155,6 +155,7 @@ class TOC extends AbstractElement
         $styles = $element->getTitleStyles();
         if (null !== $styles && isset($styles[$depth - 1])) {
             $fontStyle = Style::getStyle($styles[$depth - 1]);
+            $isObject = true;
         }
 
         $xmlWriter->startElement('w:pPr');
