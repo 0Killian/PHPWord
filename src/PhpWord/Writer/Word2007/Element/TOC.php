@@ -74,6 +74,17 @@ class TOC extends AbstractElement
         $rId = $title->getRelationId();
         $indent = (int) (($title->getDepth() - 1) * $tocStyle->getIndent());
 
+        $styles = $element->getTitleStyles();
+        if (null !== $styles && isset($styles[$title->getDepth() - 1])) {
+            $fontStyle = $styles[$title->getDepth() - 1];
+            $isObject = false;
+        }
+
+        if (is_string($fontStyle)) {
+            $fontStyle = Style::getStyle($fontStyle);
+            $isObject = true;
+        }
+
         $xmlWriter->startElement('w:p');
 
         // Write style and field mark
@@ -158,16 +169,32 @@ class TOC extends AbstractElement
             $isObject = false;
         }
 
-        $xmlWriter->startElement('w:pPr');
-
         // Paragraph
         if ($isObject && null !== $fontStyle->getParagraph()) {
+            $pStyle = clone $fontStyle->getParagraph();
+            if (count($pStyle->getTabs()) === 0) {
+                $pStyle->setTabs($tocStyle);
+            }
+            
+            if ($indent > 0 && $pStyle->getIndent() === null) {
+                $pStyle->setIndent($indent);
+            }
+
             $styleWriter = new ParagraphStyleWriter($xmlWriter, $fontStyle->getParagraph());
             $styleWriter->write();
         } else if (!$isObject && is_string($fontStyle)) {
             $f = Style::getStyle($fontStyle);
             if (null !== $f && null !== $f->getParagraph()) {
-                $styleWriter = new ParagraphStyleWriter($xmlWriter, $f->getParagraph());
+                $pStyle = clone $f->getParagraph();
+                if (count($pStyle->getTabs()) === 0) {
+                    $pStyle->setTabs($tocStyle);
+                }
+                
+                if ($indent > 0 && $pStyle->getIndent() === null) {
+                    $pStyle->setIndent($indent);
+                }
+
+                $styleWriter = new ParagraphStyleWriter($xmlWriter, $pStyle);
                 $styleWriter->write();
             }
         }
@@ -180,21 +207,6 @@ class TOC extends AbstractElement
             $xmlWriter->endElement();
             $xmlWriter->endElement(); // w:rPr
         }
-
-        // Tab
-        $xmlWriter->startElement('w:tabs');
-        $styleWriter = new TabStyleWriter($xmlWriter, $tocStyle);
-        $styleWriter->write();
-        $xmlWriter->endElement();
-
-        // Indent
-        if ($indent > 0) {
-            $xmlWriter->startElement('w:ind');
-            $xmlWriter->writeAttribute('w:left', $indent);
-            $xmlWriter->endElement();
-        }
-
-        $xmlWriter->endElement(); // w:pPr
     }
 
     /**
