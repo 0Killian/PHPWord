@@ -299,6 +299,23 @@ class Font extends AbstractStyle
     }
 
     /**
+     * Set style name.
+     *
+     * @param string $value
+     *
+     * @return self
+     */
+    public function setStyleName($value)
+    {
+        $this->styleName = $value;
+
+        if ($this->paragraph !== null) {
+            $this->paragraph->setStyleName($value);
+        }
+
+        return $this;
+    }
+    /**
      * Get style values.
      *
      * @return array
