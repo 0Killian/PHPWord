@@ -208,7 +208,7 @@ class TOC extends AbstractElement
         } else {
             $text = "TOC \\o {$minDepth}-{$maxDepth} \\h \\z \\u \\t \"";
             foreach ($styles as $depth => $style) {
-                $text .= $style . ',' . $depth . ',';
+                $text .= $style . ',' . $depth + 1 . ',';
             }
             $text = substr($text, 0, -1) . '"';
             $xmlWriter->text($text);
