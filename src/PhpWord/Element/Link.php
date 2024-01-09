@@ -123,7 +123,15 @@ class Link extends AbstractElement
      */
     public function getParagraphStyle()
     {
-        return $this->paragraphStyle;
+        if (null !== $this->paragraphStyle) {
+            return $this->paragraphStyle;
+        }
+
+        if (null !== $this->fontStyle) {
+            return $this->fontStyle->getParagraph();
+        }
+
+        return null;
     }
 
     /**
