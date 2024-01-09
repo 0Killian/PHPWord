@@ -103,8 +103,6 @@ class TextBreak extends AbstractElement
             $this->paragraphStyle->setStyleByArray($style);
         } elseif ($style instanceof Paragraph) {
             $this->paragraphStyle = $style;
-        } else {
-            $this->paragraphStyle = $style;
         }
 
         return $this->paragraphStyle;
@@ -124,6 +122,8 @@ class TextBreak extends AbstractElement
         if (null !== $this->fontStyle) {
             return $this->fontStyle->getParagraph();
         }
+
+        return new Paragraph();
     }
 
     /**

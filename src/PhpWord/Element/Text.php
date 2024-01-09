@@ -111,10 +111,6 @@ class Text extends AbstractElement
             $this->paragraphStyle->setStyleByArray($style);
         } elseif ($style instanceof Paragraph) {
             $this->paragraphStyle = $style;
-        } elseif (null === $style) {
-            $this->paragraphStyle = new Paragraph();
-        } else {
-            $this->paragraphStyle = $style;
         }
 
         return $this->paragraphStyle;
@@ -135,7 +131,7 @@ class Text extends AbstractElement
             return $this->fontStyle->getParagraph();
         }
 
-        return null;
+        return new Paragraph();
     }
 
     /**
