@@ -24,6 +24,7 @@ use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\Writer\Word2007\Style\Font as FontStyleWriter;
 use PhpOffice\PhpWord\Writer\Word2007\Style\Paragraph as ParagraphStyleWriter;
 use PhpOffice\PhpWord\Writer\Word2007\Style\Tab as TabStyleWriter;
+use PhpOffice\PhpWord\Style;
 
 /**
  * TOC element writer.
@@ -76,7 +77,7 @@ class TOC extends AbstractElement
         $xmlWriter->startElement('w:p');
 
         // Write style and field mark
-        $this->writeStyle($xmlWriter, $element, $indent);
+        $this->writeStyle($xmlWriter, $element, $indent, $title->getDepth());
         if ($writeFieldMark) {
             $this->writeFieldMark($xmlWriter, $element);
         }
@@ -145,11 +146,16 @@ class TOC extends AbstractElement
     /**
      * Write style.
      */
-    private function writeStyle(XMLWriter $xmlWriter, TOCElement $element, int $indent): void
+    private function writeStyle(XMLWriter $xmlWriter, TOCElement $element, int $indent, int $depth): void
     {
         $tocStyle = $element->getStyleTOC();
         $fontStyle = $element->getStyleFont();
         $isObject = ($fontStyle instanceof Font) ? true : false;
+
+        $styles = $element->getTitleStyles();
+        if (null !== $styles && isset($styles[$depth - 1])) {
+            $fontStyle = Style::getStyle($styles[$depth - 1]);
+        }
 
         $xmlWriter->startElement('w:pPr');
 
@@ -189,8 +195,6 @@ class TOC extends AbstractElement
      */
     private function writeFieldMark(XMLWriter $xmlWriter, TOCElement $element): void
     {
-        $styles = $element->getTitleStyles();
-
         $minDepth = $element->getMinDepth();
         $maxDepth = $element->getMaxDepth();
 
@@ -203,16 +207,7 @@ class TOC extends AbstractElement
         $xmlWriter->startElement('w:r');
         $xmlWriter->startElement('w:instrText');
         $xmlWriter->writeAttribute('xml:space', 'preserve');
-        if (null === $styles) {
-            $xmlWriter->text("TOC \\o {$minDepth}-{$maxDepth} \\h \\z \\u");
-        } else {
-            $text = "TOC \\o {$minDepth}-{$maxDepth} \\h \\z \\u \\t \"";
-            foreach ($styles as $depth => $style) {
-                $text .= $style . ',' . $depth + 1 . ',';
-            }
-            $text = substr($text, 0, -1) . '"';
-            $xmlWriter->text($text);
-        }
+        $xmlWriter->text("TOC \\o {$minDepth}-{$maxDepth} \\h \\z \\u");
         $xmlWriter->endElement();
         $xmlWriter->endElement();
 
