@@ -20,6 +20,7 @@ namespace PhpOffice\PhpWord\Element;
 use PhpOffice\PhpWord\Shared\Text as SharedText;
 use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\Style\Paragraph;
+use PhpOffice\PhpWord\Style;
 
 /**
  * Text element.
@@ -127,8 +128,12 @@ class Text extends AbstractElement
             return $this->paragraphStyle;
         }
 
-        if (null !== $this->fontStyle && !is_string($this->fontStyle)) {
-            return $this->fontStyle->getParagraph();
+        if (null !== $this->fontStyle) {
+            if($this->fontStyle instanceof Font) {
+                return $this->fontStyle->getParagraph();
+            } else if (is_string($this->fontStyle)) {
+                return Style::getStyle($this->fontStyle)->getParagraph();
+            }
         }
 
         return new Paragraph();

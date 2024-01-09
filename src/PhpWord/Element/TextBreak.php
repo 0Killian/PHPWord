@@ -19,6 +19,7 @@ namespace PhpOffice\PhpWord\Element;
 
 use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\Style\Paragraph;
+use PhpOffice\PhpWord\Style;
 
 /**
  * Text break element.
@@ -119,8 +120,12 @@ class TextBreak extends AbstractElement
             return $this->paragraphStyle;
         }
 
-        if (null !== $this->fontStyle && !is_string($this->fontStyle)) {
-            return $this->fontStyle->getParagraph();
+        if (null !== $this->fontStyle) {
+            if ($this->fontStyle instanceof Font) {
+                return $this->fontStyle->getParagraph();
+            } elseif (is_string($this->fontStyle)) {
+                return Style::getStyle($this->fontStyle)->getParagraph();
+            }
         }
 
         return new Paragraph();
