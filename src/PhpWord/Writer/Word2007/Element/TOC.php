@@ -154,8 +154,8 @@ class TOC extends AbstractElement
 
         $styles = $element->getTitleStyles();
         if (null !== $styles && isset($styles[$depth - 1])) {
-            $fontStyle = Style::getStyle($styles[$depth - 1]);
-            $isObject = true;
+            $fontStyle = $styles[$depth - 1];
+            $isObject = false;
         }
 
         $xmlWriter->startElement('w:pPr');
@@ -164,6 +164,12 @@ class TOC extends AbstractElement
         if ($isObject && null !== $fontStyle->getParagraph()) {
             $styleWriter = new ParagraphStyleWriter($xmlWriter, $fontStyle->getParagraph());
             $styleWriter->write();
+        } else if (!$isObject && is_string($fontStyle)) {
+            $f = Style::getStyle($fontStyle);
+            if (null !== $f && null !== $f->getParagraph()) {
+                $styleWriter = new ParagraphStyleWriter($xmlWriter, $f->getParagraph());
+                $styleWriter->write();
+            }
         }
 
         // Font
