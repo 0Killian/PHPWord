@@ -294,6 +294,8 @@ class Font extends AbstractStyle
     {
         $this->type = $type;
         $this->setParagraph($paragraph);
+        if ($this->paragraph !== null)
+            $this->paragraph->setStyleName($this->getStyleName());
     }
 
     /**
