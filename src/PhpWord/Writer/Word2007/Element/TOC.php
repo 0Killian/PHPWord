@@ -131,6 +131,11 @@ class TOC extends AbstractElement
 
         if ($element->getUseNumbering() && $titleParagraphStyle !== null && $titleParagraphStyle->getNumStyle() !== null) {
             $numStyle = $titleParagraphStyle->getNumStyle();
+
+            if (is_string($numStyle)) {
+                $numStyle = Style::getStyle($numStyle);
+            }
+
             if ($numStyle->getType() === 'multilevel' || $numStyle->getType() === 'hybridMultilevel') {
                 $levels = $numStyle->getLevels();
 
