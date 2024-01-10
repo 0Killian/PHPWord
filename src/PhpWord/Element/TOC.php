@@ -104,8 +104,14 @@ class TOC extends AbstractElement
                 throw new \InvalidArgumentException('Style must be a string');
             }
 
-            if(Style::getStyle($style) === null) {
+            $s = Style::getStyle($style);
+
+            if($s === null) {
                 throw new \InvalidArgumentException('Style "'.$style.'" not found');
+            }
+
+            if (!($s instanceof Style\Font)) {
+                throw new \InvalidArgumentException('Style "'.$style.'" must be a font style');
             }
         }
     }
