@@ -62,6 +62,13 @@ class TOC extends AbstractElement
     private $styles = [];
 
     /**
+     * Use numbering prefix in titles.
+     *
+     * @var bool
+     */
+    private $useNumbering = true;
+
+    /**
      * Create a new Table-of-Contents Element.
      *
      * @param mixed $styles
@@ -70,7 +77,7 @@ class TOC extends AbstractElement
      * @param int $minDepth
      * @param int $maxDepth
      */
-    public function __construct($styles = null, $fontStyle = null, $tocStyle = null, $minDepth = 1, $maxDepth = 9)
+    public function __construct($styles = null, $fontStyle = null, $tocStyle = null, $useNumberingPrefix = false, $minDepth = 1, $maxDepth = 9)
     {
         $this->tocStyle = new TOCStyle();
 
@@ -89,6 +96,7 @@ class TOC extends AbstractElement
         $this->maxDepth = $maxDepth;
 
         $this->styles = $styles;
+        $this->useNumbering = $useNumberingPrefix;
     }
 
     /**
@@ -185,5 +193,25 @@ class TOC extends AbstractElement
     public function getMinDepth()
     {
         return $this->minDepth;
+    }
+
+    /**
+     * Set use numbering.
+     *
+     * @param bool $value
+     */
+    public function setUseNumbering($value): void
+    {
+        $this->useNumbering = $value;
+    }
+
+    /**
+     * Get use numbering.
+     *
+     * @return bool
+     */
+    public function getUseNumbering()
+    {
+        return $this->useNumbering;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of PHPWord - A pure PHP library for reading and writing
  * word processing documents.
@@ -23,7 +24,6 @@ use PhpOffice\PhpWord\Shared\XMLWriter;
 use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\Writer\Word2007\Style\Font as FontStyleWriter;
 use PhpOffice\PhpWord\Writer\Word2007\Style\Paragraph as ParagraphStyleWriter;
-use PhpOffice\PhpWord\Writer\Word2007\Style\Tab as TabStyleWriter;
 use PhpOffice\PhpWord\Style;
 
 /**
@@ -47,8 +47,17 @@ class TOC extends AbstractElement
         $titles = $element->getTitles();
         $writeFieldMark = true;
 
+        $indices = [];
+
         foreach ($titles as $title) {
-            $this->writeTitle($xmlWriter, $element, $title, $writeFieldMark);
+            $depth = $title->getDepth();
+            if (count($indices) < $depth) {
+                $indices[] = 0;
+            } else {
+                $indices = array_slice($indices, 0, $depth - 1);
+                $indices[$depth - 1]++;
+            }
+            $this->writeTitle($xmlWriter, $element, $title, $writeFieldMark, $indices);
             if ($writeFieldMark) {
                 $writeFieldMark = false;
             }
@@ -66,7 +75,7 @@ class TOC extends AbstractElement
     /**
      * Write title.
      */
-    private function writeTitle(XMLWriter $xmlWriter, TOCElement $element, Title $title, bool $writeFieldMark): void
+    private function writeTitle(XMLWriter $xmlWriter, TOCElement $element, Title $title, bool $writeFieldMark, array $indices): void
     {
         $tocStyle = $element->getStyleTOC();
         $fontStyle = $element->getStyleFont();
@@ -84,6 +93,8 @@ class TOC extends AbstractElement
             $fontStyle = Style::getStyle($fontStyle);
             $isObject = true;
         }
+
+        $paragraphStyle = $fontStyle->getParagraph();
 
         $xmlWriter->startElement('w:p');
 
@@ -107,6 +118,32 @@ class TOC extends AbstractElement
         $xmlWriter->startElement('w:t');
 
         $titleText = $title->getText();
+
+        if ($element->getUseNumbering() && $paragraphStyle->getNumStyle() !== null) {
+            $numStyle = $paragraphStyle->getNumStyle();
+            if ($numStyle->getType() === 'multilevel' || $numStyle->getType() === 'hybridMultilevel') {
+                $levels = $numStyle->getLevels();
+
+                foreach($levels as $i => $level) {
+                    if (isset($indices[$i])) {
+                        $indices[$i] += $level->getStart();
+                    }
+                }
+
+                if (isset($levels[$title->getDepth() - 1])) {
+                    $level = $levels[$title->getDepth() - 1];
+                    $numberingTextFormat = $level->getText();
+                    foreach ($indices as $depth => $index) {
+                        $numberingTextFormat = str_replace("%{$depth}", $index, $numberingTextFormat);
+                    }
+
+                    $titleText = $numberingTextFormat . " {$titleText}";
+                } else {
+                    throw new \Exception('Invalid multilevel numbering style');
+                }
+            }
+        }
+
         $this->writeText(is_string($titleText) ? $titleText : '');
 
         $xmlWriter->endElement(); // w:t
@@ -175,7 +212,7 @@ class TOC extends AbstractElement
             if (count($pStyle->getTabs()) === 0) {
                 $pStyle->setTabs($tocStyle);
             }
-            
+
             if ($indent > 0 && $pStyle->getIndent() === null) {
                 $pStyle->setIndent($indent);
             }
@@ -189,7 +226,7 @@ class TOC extends AbstractElement
                 if (count($pStyle->getTabs()) === 0) {
                     $pStyle->setTabs($tocStyle);
                 }
-                
+
                 if ($indent > 0 && $pStyle->getIndent() === null) {
                     $pStyle->setIndent($indent);
                 }
