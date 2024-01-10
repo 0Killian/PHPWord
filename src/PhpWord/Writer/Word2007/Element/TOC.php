@@ -54,7 +54,7 @@ class TOC extends AbstractElement
             if (count($indices) < $depth) {
                 $indices[] = 0;
             } else {
-                $indices = array_slice($indices, 0, $depth - 1);
+                $indices = array_slice($indices, 0, $depth);
                 $indices[$depth - 1]++;
             }
             $this->writeTitle($xmlWriter, $element, $title, $writeFieldMark, $indices);
@@ -94,7 +94,17 @@ class TOC extends AbstractElement
             $isObject = true;
         }
 
-        $paragraphStyle = $fontStyle->getParagraph();
+        $titleFontStyle = $title->getStyle();
+
+        if (is_string($titleFontStyle)) {
+            $titleFontStyle = Style::getStyle($titleFontStyle);
+        }
+
+        if (null !== $titleFontStyle) {
+            $titleParagraphStyle = $titleFontStyle->getParagraph();
+        } else {
+            $titleParagraphStyle = null;
+        }
 
         $xmlWriter->startElement('w:p');
 
@@ -119,8 +129,8 @@ class TOC extends AbstractElement
 
         $titleText = $title->getText();
 
-        if ($element->getUseNumbering() && $paragraphStyle->getNumStyle() !== null) {
-            $numStyle = $paragraphStyle->getNumStyle();
+        if ($element->getUseNumbering() && $titleParagraphStyle !== null && $titleParagraphStyle->getNumStyle() !== null) {
+            $numStyle = $titleParagraphStyle->getNumStyle();
             if ($numStyle->getType() === 'multilevel' || $numStyle->getType() === 'hybridMultilevel') {
                 $levels = $numStyle->getLevels();
 
@@ -134,7 +144,8 @@ class TOC extends AbstractElement
                     $level = $levels[$title->getDepth() - 1];
                     $numberingTextFormat = $level->getText();
                     foreach ($indices as $depth => $index) {
-                        $numberingTextFormat = str_replace("%{$depth}", $index, $numberingTextFormat);
+                        $d = $depth + 1;
+                        $numberingTextFormat = str_replace("%{$d}", $index, $numberingTextFormat);
                     }
 
                     $titleText = $numberingTextFormat . " {$titleText}";
