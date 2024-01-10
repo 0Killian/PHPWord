@@ -110,8 +110,8 @@ class TOC extends AbstractElement
                 throw new \InvalidArgumentException('Style "'.$style.'" not found');
             }
 
-            if (!($s instanceof Style\Font)) {
-                throw new \InvalidArgumentException('Style "'.$style.'" must be a font style');
+            if (!($s instanceof Style\Font) && !($s instanceof Style\Paragraph)) {
+                throw new \InvalidArgumentException('Style "'.$style.'" must be a font or a paragprah style');
             }
         }
     }

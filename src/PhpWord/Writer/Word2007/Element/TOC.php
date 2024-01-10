@@ -85,8 +85,16 @@ class TOC extends AbstractElement
 
         $styles = $element->getTitleStyles();
         if (null !== $styles && isset($styles[$title->getDepth() - 1])) {
-            $fontStyle = $styles[$title->getDepth() - 1];
-            $isObject = false;
+            $style = $styles[$title->getDepth() - 1];
+
+            if (is_string($style)) {
+                $style = Style::getStyle($style);
+            }
+
+            if ($style instanceof Font) {
+                $fontStyle = $style;
+                $isObject = true;
+            }
         }
 
         if (is_string($fontStyle)) {
@@ -218,13 +226,32 @@ class TOC extends AbstractElement
 
         $styles = $element->getTitleStyles();
         if (null !== $styles && isset($styles[$depth - 1])) {
-            $fontStyle = $styles[$depth - 1];
-            $isObject = false;
+            $style = $styles[$depth - 1];
+
+            if (is_string($style)) {
+                $style = Style::getStyle($style);
+                $isObject = true;
+            }
+
+            if ($style instanceof Font) {
+                $fontStyle = $style;
+                $isObject = true;
+            } else {
+                $pStyle = clone $style;
+            }
         }
 
         // Paragraph
         if ($isObject && null !== $fontStyle->getParagraph()) {
             $pStyle = clone $fontStyle->getParagraph();
+        } else if (!$isObject && is_string($fontStyle)) {
+            $f = Style::getStyle($fontStyle);
+            if (null !== $f && null !== $f->getParagraph()) {
+                $pStyle = clone $f->getParagraph();
+            }
+        }
+
+        if (isset($pStyle)) {
             if (count($pStyle->getTabs()) === 0) {
                 $pStyle->setTabs($tocStyle);
             }
@@ -233,23 +260,8 @@ class TOC extends AbstractElement
                 $pStyle->setIndent($indent);
             }
 
-            $styleWriter = new ParagraphStyleWriter($xmlWriter, $fontStyle->getParagraph());
+            $styleWriter = new ParagraphStyleWriter($xmlWriter, $pStyle);
             $styleWriter->write();
-        } else if (!$isObject && is_string($fontStyle)) {
-            $f = Style::getStyle($fontStyle);
-            if (null !== $f && null !== $f->getParagraph()) {
-                $pStyle = clone $f->getParagraph();
-                if (count($pStyle->getTabs()) === 0) {
-                    $pStyle->setTabs($tocStyle);
-                }
-
-                if ($indent > 0 && $pStyle->getIndent() === null) {
-                    $pStyle->setIndent($indent);
-                }
-
-                $styleWriter = new ParagraphStyleWriter($xmlWriter, $pStyle);
-                $styleWriter->write();
-            }
         }
 
         // Font
