@@ -230,7 +230,6 @@ class TOC extends AbstractElement
 
             if (is_string($style)) {
                 $style = Style::getStyle($style);
-                $isObject = true;
             }
 
             if ($style instanceof Font) {
