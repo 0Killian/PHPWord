@@ -20,6 +20,7 @@ namespace PhpOffice\PhpWord\Element;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\Style\TOC as TOCStyle;
+use PhpOffice\PhpWord\Style;
 
 /**
  * Table of contents.
@@ -97,6 +98,16 @@ class TOC extends AbstractElement
 
         $this->styles = $styles;
         $this->useNumbering = $useNumberingPrefix;
+
+        foreach ($this->styles as $style) {
+            if (!is_string($style)) {
+                throw new \InvalidArgumentException('Style must be a string');
+            }
+
+            if(Style::getStyle($style) === null) {
+                throw new \InvalidArgumentException('Style "'.$style.'" not found');
+            }
+        }
     }
 
     /**
